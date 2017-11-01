@@ -1,0 +1,39 @@
+<!DOCTYPE xml>
+<!-- 每300秒自动更新配置文件 -->
+<Configuration status="WARN" monitorInterval="300">
+    <properties>
+    	<!-- 日志文件路径和文件名 -->
+        <property name="logDir">/Users/hucunsheng/Downloads/dev/logs</property>
+        <property name="fileName">startup-web</property>
+    </properties>
+    <Appenders>
+    	<!-- ConsoleAppender，向System.out输出日志 -->
+        <Console name="Console" target="SYSTEM_OUT">
+            <PatternLayout pattern="%d [%t] [%level] %c - %m%n"/>
+        </Console>
+        <!-- RollingRandomAccessFileAppender，向文件输出日志 -->
+        <!-- RandomAccessFileAppender使用NIO的RandomAccessFile类，比启用了buffered的普通FileAppender性能更好 -->
+        <RollingRandomAccessFile name="File" fileName="${logDir}/${fileName}.log"
+            filePattern="${logDir}/${fileName}-%d{yyyy-MM-dd}-%i.log">
+            <PatternLayout pattern="%d [%t] [%level] %c - %m%n"/>
+            <Policies>
+            	<!-- 两重切分策略，每天切分，同时一天内日志达到10MB时切分 -->
+                <TimeBasedTriggeringPolicy interval="1"/>
+                <SizeBasedTriggeringPolicy size="10 MB"/>
+            </Policies>
+            <!-- 文件滚动策略nomax，代表一天内切分的日志文件数不受限制 -->
+            <DefaultRolloverStrategy fileIndex="nomax"/>
+        </RollingRandomAccessFile>
+    </Appenders>
+    <Loggers>
+        <!-- root logger，生产环境中应启用"File"，禁用"Console" -->
+        <Root level="info">
+            <AppenderRef ref="Console"/>
+            <!-- <AppenderRef ref="File"/> -->
+        </Root>
+        <!-- 输出动态SQL内容、参数、结果集等，用于调试，生产环境中需删除 -->
+        <Logger name="com.asiainfo.webapp.startup.dao" level="debug" additivity="false">
+            <AppenderRef ref="Console"/>
+        </Logger>
+    </Loggers>
+</Configuration>

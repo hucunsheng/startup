@@ -1,0 +1,29 @@
+package com.asiainfo.webapp.startup.util;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+
+/**
+ * 维护web工程的根域名<br>
+ * 根域名通过WEB-INF/spring/props.xml注入
+ * 
+ * @author wukg
+ *
+ */
+public class TestUtils {
+	public static void main(String[]  args) throws Exception{
+		Date dd = new Date(1506650255677l);
+		Date dd1 = new Date(1506355203231l);
+		SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		long timeStart=sdf.parse("2017-09-28 00:10:00").getTime();
+		Long longstr = new Date().getTime();
+		Date dd12 = new Date(timeStart);
+		System.out.println(dd);
+		System.out.println(dd1);
+		System.out.println(longstr);
+		System.out.println(timeStart);
+		System.out.println(dd12);
+	}
+}

@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<!-- 引入JSTL标签库 -->
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt"  prefix="fmt"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions"  prefix="fn"%>
+<html>
+<head>
+<!-- base为HostUtils管理的根域名，页面中所有其他url均默认为相对于此路径 -->
+  <base href="<%=com.asiainfo.webapp.startup.util.HostUtils.getHost()%>"/>
+  <script type="text/javascript" src="static/js/jquery-1.12.4.min.js" charset="utf-8"></script>  
+	<meta charset="UTF-8">
+	<title>Group Format - jQuery EasyUI Demo</title>
+	<link rel="stylesheet" type="text/css" href="http://www.jeasyui.net/Public/js/easyui/themes/default/easyui.css">
+	<link rel="stylesheet" type="text/css" href="http://www.jeasyui.net/Public/js/easyui/themes/icon.css">
+	<link rel="stylesheet" type="text/css" href="http://www.jeasyui.net/Public/js/easyui/demo/demo.css">
+	<script type="text/javascript" src="http://www.jeasyui.net/Public/js/easyui/jquery.min.js"></script>
+	<script type="text/javascript" src="http://www.jeasyui.net/Public/js/easyui/jquery.easyui.min.js"></script>
+</head>
+<body>
+	<h2>Basic PropertyGrid</h2>
+	<p>Click on row to change each property value.</p>
+	<div style="margin:20px 0;">
+		<a href="javascript:void(0)" class="easyui-linkbutton" onclick="showGroup()">ShowGroup</a>
+		<a href="javascript:void(0)" class="easyui-linkbutton" onclick="hideGroup()">HideGroup</a>
+		<a href="javascript:void(0)" class="easyui-linkbutton" onclick="showHeader()">ShowHeader</a>
+		<a href="javascript:void(0)" class="easyui-linkbutton" onclick="hideHeader()">HideHeader</a>
+		<a href="javascript:void(0)" class="easyui-linkbutton" onclick="getChanges()">GetChanges</a>
+	</div>
+	<table id="pg" class="easyui-propertygrid" style="width:300px" data-options="
+				url:'bjrbj/showBjrbjAjax',
+				method:'get',
+				showGroup:true,
+				scrollbarSize:0
+			">
+	</table>
+ 
+	<script type="text/javascript">
+		function showGroup(){
+			$('#pg').propertygrid({
+				showGroup:true
+			});
+		}
+		function hideGroup(){
+			$('#pg').propertygrid({
+				showGroup:false
+			});
+		}
+		function showHeader(){
+			$('#pg').propertygrid({
+				showHeader:true
+			});
+		}
+		function hideHeader(){
+			$('#pg').propertygrid({
+				showHeader:false
+			});
+		}
+		function getChanges(){
+			var s = '';
+			var rows = $('#pg').propertygrid('getChanges');
+			for(var i=0; i<rows.length; i++){
+				s += rows[i].name + ':' + rows[i].value + ',';
+			}
+			alert(s)
+		}
+	</script>
+</body>
+</html>

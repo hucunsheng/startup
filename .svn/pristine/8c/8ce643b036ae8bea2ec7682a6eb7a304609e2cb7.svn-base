@@ -1,0 +1,73 @@
+package com.asiainfo.webapp.startup.token;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.commons.lang3.RandomStringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.web.method.HandlerMethod;
+import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.ModelAndViewDefiningException;
+import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
+
+/**
+ * Token拦截器，用于实现防重复提交和防CSRF攻击
+ * 
+ * @author wukg
+ *
+ */
+public class TokenInterceptor extends HandlerInterceptorAdapter {
+	private static final Logger logger = LoggerFactory.getLogger(TokenInterceptor.class);
+	
+	//Controller方法调用前执行
+	@Override
+	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
+			throws Exception {
+		if (handler instanceof HandlerMethod) {
+			//获得controller方法的Token注解
+			Token annotation = ((HandlerMethod)handler).getMethod().getAnnotation(Token.class);
+			if(annotation != null) {
+				//如果有Token注解且required = true
+				if(annotation.required()) {
+					//取session中存储的token
+					String tokenInSession = String.valueOf(request.getSession().getAttribute("_gdef_token"));
+					//取请求中提交的token
+					String tokenParam = request.getParameter("_gpost_token");
+					//比对，不一致则跳转至global/invalid.jsp
+					if(!tokenInSession.equals(tokenParam)) {
+						logger.debug("token校验未通过，期望：{}，提交：{}", tokenInSession, tokenParam);
+						throw new ModelAndViewDefiningException(new ModelAndView("global/invalid"));
+					}
+					logger.debug("token校验通过");
+					//比对一致，移除session中的token
+					request.getSession().removeAttribute("_gdef_token");
+				}
+			}
+		}
+		return true;
+	}
+
+	//Controller方法返回后执行
+	@Override
+	public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler,
+			ModelAndView modelAndView)
+			throws Exception {
+		if (handler instanceof HandlerMethod) {
+			//获得controller方法的Token注解
+			Token annotation = ((HandlerMethod)handler).getMethod().getAnnotation(Token.class);
+			if(annotation != null) {
+				//如果有Token注解且generate = true
+				if(annotation.generate()) {
+					//生成随机Token
+					String token = RandomStringUtils.randomAlphanumeric(18);
+					//将随机token存入session
+					request.getSession().setAttribute("_gdef_token", token);
+					//将随机token存入model
+					modelAndView.getModel().put("_gpost_token", token);
+					logger.debug("生成token：{}", token);
+				}
+			}
+		}
+	}
+}

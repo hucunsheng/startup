@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE generatorConfiguration PUBLIC "-//mybatis.org//DTD MyBatis Generator Configuration 1.0//EN" "http://mybatis.org/dtd/mybatis-generator-config_1_0.dtd">
+<generatorConfiguration>
+<classPathEntry location="D:\dev\apache-tomcat-7.0.69\lib\mysql-connector-java-5.1.37-bin.jar" /> 
+  <context id="context1">
+      <commentGenerator>    
+        <property name="suppressAllComments" value="true"/>    
+    </commentGenerator> 
+    <jdbcConnection connectionURL="jdbc:mysql://101.200.50.194:3306/mysql" driverClass="com.mysql.jdbc.Driver" password="eBizEc,321!" userId="hucs" />
+    <javaModelGenerator targetPackage="com.asiainfo.webapp.startup.dao.model" targetProject="startup-dao/src/main/java" />
+    <sqlMapGenerator targetPackage="com.asiainfo.webapp.startup.dao.mapping" targetProject="startup-dao/src/main/java" />
+    <javaClientGenerator targetPackage="com.asiainfo.webapp.startup.dao.mapper" targetProject="startup-dao/src/main/java" type="XMLMAPPER" />
+    <table schema="test" tableName="order_record" domainObjectName="OrderRecord" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false" enableDeleteByPrimaryKey="false">
+    </table>
+  </context>
+</generatorConfiguration>

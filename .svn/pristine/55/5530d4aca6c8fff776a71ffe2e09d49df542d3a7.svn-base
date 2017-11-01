@@ -1,0 +1,55 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:context="http://www.springframework.org/schema/context"
+    xmlns:p="http://www.springframework.org/schema/p"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/context
+        http://www.springframework.org/schema/context/spring-context.xsd">
+
+    <context:annotation-config/>
+    <!--
+        spring session的相关配置
+        maxInactiveIntervalInSeconds：会话有效期
+        redisNamespace：存储于Redis中的会话信息的key的前缀，在Redis中存储了多个应用的session时，通过配置不同的前缀方便区分
+        redisFlushMode：ON_SAVE表示在响应返回时将本次请求处理中对Session的所有写动作一次提交至Redis；IMMEDIATE表示每次调用session.setAttribute时都会向Redis提交
+    -->
+    <bean class="org.springframework.session.data.redis.config.annotation.web.http.RedisHttpSessionConfiguration">
+        <property name="maxInactiveIntervalInSeconds" value="1800"/>
+        <property name="redisNamespace" value="shared"/>
+        <property name="redisFlushMode" value="ON_SAVE"/>
+    </bean>
+
+    <!--
+        用于session交互的cookie的相关配置
+        cookieName：存储sessionId的cookie名称
+        cookiePath：cookie的path，默认为webapp的contextRoot
+        domainName：cookie的domain：默认为请求中的域名，当需要让会话跨多个子域共享时，可通过此配置实现
+        cookieMaxAge：cookie的有效期，默认为-1，即关闭浏览器时失效
+    -->
+    <bean class="org.springframework.session.web.http.DefaultCookieSerializer">
+        <property name="cookieName" value="sh_JSESSIONID"></property>
+        <!-- <property name="cookiePath" value="/sharedSession/"></property>
+        <property name="domainName" value="localhost"></property>
+        <property name="useHttpOnlyCookie" value="true"></property>
+        <property name="cookieMaxAge" value="-1"></property> -->
+    </bean>
+
+    <!-- Jedis连接池的配置，配置项与commons-pool2支持的配置项完全一致 -->
+    <bean id="jedisPoolConfig" class="redis.clients.jedis.JedisPoolConfig">
+        <property name="maxTotal" value="20"/>
+        <property name="maxIdle" value="10"/>
+        <property name="minIdle" value="5"/>
+    </bean>
+
+    <!-- Jedis连接工厂配置 -->
+    <bean id="jedisFactory" class="org.springframework.data.redis.connection.jedis.JedisConnectionFactory">
+        <property name="hostName" value="101.200.50.194"/>
+        <property name="password" value="123" />
+        <property name="port" value="6379"/>
+        <property name="poolConfig" ref="jedisPoolConfig"/>
+        <property name="timeout" value="5000"/>
+    </bean>
+    
+    <bean id="stringRedisTemplate" class="org.springframework.data.redis.core.StringRedisTemplate" p:connection-factory-ref="jedisFactory"/>
+</beans>

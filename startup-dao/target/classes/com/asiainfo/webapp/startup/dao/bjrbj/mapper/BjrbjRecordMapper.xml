@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.asiainfo.webapp.startup.dao.bjrbj.BjrbjRecordMapper">
+  <resultMap id="BaseResultMap" type="com.asiainfo.webapp.startup.dao.bjrbj.model.BjrbjRecord">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="phone" jdbcType="VARCHAR" property="phone" />
+    <result column="user_name" jdbcType="VARCHAR" property="userName" />
+    <result column="idcard_no" jdbcType="VARCHAR" property="idcardNo" />
+    <result column="sex" jdbcType="VARCHAR" property="sex" />
+    <result column="birthday" jdbcType="VARCHAR" property="birthday" />
+    <result column="nation" jdbcType="VARCHAR" property="nation" />
+    <result column="country" jdbcType="VARCHAR" property="country" />
+    <result column="certificate_address" jdbcType="VARCHAR" property="certificateAddress" />
+    <result column="certificate_zip_code" jdbcType="VARCHAR" property="certificateZipCode" />
+    <result column="current_address" jdbcType="VARCHAR" property="currentAddress" />
+    <result column="zip_code" jdbcType="VARCHAR" property="zipCode" />
+    <result column="education" jdbcType="VARCHAR" property="education" />
+    <result column="marital_status" jdbcType="VARCHAR" property="maritalStatus" />
+    <result column="hospital1" jdbcType="VARCHAR" property="hospital1" />
+    <result column="hospital2" jdbcType="VARCHAR" property="hospital2" />
+    <result column="hospital3" jdbcType="VARCHAR" property="hospital3" />
+    <result column="pic" jdbcType="BLOB" property="pic" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+  </resultMap>
+  
+  <sql id="Base_Column_List">
+    id, phone, user_name, idcard_no, sex, birthday, nation, country, certificate_address, certificate_zip_code, 
+	current_address, zip_code, education, marital_status, hospital1, hospital2, hospital3, pic, create_time, update_time
+  </sql>
+  
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from bjrbj_record
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  
+  <select id="selectByModel" parameterType="BjrbjRecord" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from bjrbj_record
+    <trim prefix="where" suffixOverrides="and">
+      <if test="id != null">
+        id = #{id,jdbcType=INTEGER} and
+      </if>
+      <if test="userName != null">
+        user_name = #{userName,jdbcType=VARCHAR} and
+      </if>
+      <if test="idcardNo != null">
+        idcard_no = #{idcardNo,jdbcType=VARCHAR} and
+      </if>
+    </trim>
+    order by update_time desc
+  </select>
+    
+   <select id="selectByModelCount" parameterType="BjrbjRecord" resultType="java.lang.Integer">
+    select count(1)
+    from bjrbj_record
+    <trim prefix="where" suffixOverrides="and">
+      <if test="id != null">
+        id = #{id,jdbcType=INTEGER} and
+      </if>
+      <if test="userName != null">
+        user_name = #{userName,jdbcType=VARCHAR} and
+      </if>
+      <if test="idcardNo != null">
+        idcard_no = #{idcardNo,jdbcType=VARCHAR} and
+      </if>
+    </trim>
+  </select>  
+      
+  <insert id="insert" useGeneratedKeys="true" keyProperty="id" parameterType="BjrbjRecord">
+	insert into bjrbj_record (
+	id, phone, user_name, idcard_no, sex, 
+	birthday, nation, country, certificate_address, certificate_zip_code, 
+	current_address, zip_code, education, marital_status, hospital1, 
+	hospital2, hospital3, pic, create_time, update_time)
+	values (null,#{phone,jdbcType=VARCHAR},#{userName,jdbcType=VARCHAR}, #{idcardNo,jdbcType=VARCHAR},#{sex,jdbcType=VARCHAR},
+	#{birthday,jdbcType=VARCHAR},#{nation,jdbcType=VARCHAR},#{country,jdbcType=VARCHAR},#{certificateAddress,jdbcType=VARCHAR},#{certificateZipCode,jdbcType=VARCHAR},
+	#{currentAddress,jdbcType=VARCHAR},#{zipCode,jdbcType=VARCHAR},#{education,jdbcType=VARCHAR},#{maritalStatus,jdbcType=VARCHAR},#{hospital1,jdbcType=VARCHAR},
+	#{hospital2,jdbcType=VARCHAR},#{hospital3,jdbcType=VARCHAR},#{pic,jdbcType=BLOB},now(),now())
+  </insert>
+
+  <insert id="insertSelective" useGeneratedKeys="true" keyProperty="id" parameterType="BjrbjRecord">
+    insert into bjrbj_record
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="userName != null">
+        user_name,
+      </if>
+      <if test="idcardNo != null">
+        idcard_no,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="userName != null">
+        #{userName,jdbcType=VARCHAR},
+      </if>
+      <if test="idcardNo != null">
+        #{idcardNo,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+    
+  
+  <update id="updateByPrimaryKeySelective" parameterType="BjrbjRecord">
+    update bjrbj_record 
+    <trim prefix="set" suffixOverrides=",">
+      <if test="userName != null">
+        user_name = #{userName,jdbcType=INTEGER},
+      </if>
+      <if test="idcardNo != null">
+        idcard_no = #{idcardNo,jdbcType=VARCHAR},
+      </if>
+      <if test="certificateAddress != null">
+        certificate_address = #{certificateAddress,jdbcType=VARCHAR},
+      </if>
+      <if test="currentAddress != null">
+        current_address = #{currentAddress,jdbcType=VARCHAR},
+      </if>
+      <if test="zipCode != null">
+        zip_code = #{zipCode,jdbcType=VARCHAR},
+      </if>
+    </trim>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  
+  <update id="updateByPrimaryKey" parameterType="BjrbjRecord">
+    update bjrbj_record
+    set user_name = #{userName,jdbcType=VARCHAR},
+      idcard_no = #{idcardNo,jdbcType=VARCHAR},
+      certificate_address = #{certificateAddress,jdbcType=VARCHAR},
+      update_time = now()
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

@@ -1,0 +1,99 @@
+package com.asiainfo.webapp.startup.controller.order;
+
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.List;
+
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletResponse;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.servlet.ModelAndView;
+
+import com.alibaba.fastjson.JSONObject;
+import com.asiainfo.webapp.startup.dao.order.model.OrderRecord;
+import com.asiainfo.webapp.startup.paging.Page;
+import com.asiainfo.webapp.startup.service.order.OrderService;
+import com.asiainfo.webapp.startup.token.Token;
+import com.asiainfo.webapp.startup.vo.order.OrderVO;
+
+@Controller //标注@Controller注解，以实现自动扫描和注册
+@RequestMapping("/order") //所有/order开头的url匹配至此controller
+public class OrderController {
+	private static final Logger logger = LoggerFactory.getLogger(OrderController.class);
+	
+	//注入名为orderService的bean
+	@Resource(name="orderService") 
+	private OrderService orderService;
+	
+	@RequestMapping("/showOrders") //匹配url：/order/showOrders
+	@Token(generate = true) //此请求对应的响应中需要生成token
+	public ModelAndView showOrders(OrderRecord order, Page page) {
+		logger.debug("订单检索入口");
+		
+		if(page.getRows() > 20 || page.getPage() < 1) {
+			logger.error("非法的分页参数，pageSize: {}, pageNo: {}", page.getRows(), page.getPage());
+			ModelAndView mav = new ModelAndView("error");
+			mav.getModel().put("errorMsg", "非法请求");
+			return mav;
+		}
+		
+		List<OrderVO> list = orderService.findOrder(order, page);
+		ModelAndView mav = new ModelAndView("orders");
+		mav.getModel().put("orders", list);
+		mav.getModel().put("page", page);
+		mav.getModel().put("params", order);
+		return mav;
+	}
+	
+	//匹配url：/order/newOrder，且仅支持POST方法
+	@RequestMapping(path = "/newOrder", method = RequestMethod.POST)
+	@Token(required = true, generate = true) //此请求需要验证token，同时响应中需要生成token
+	public ModelAndView newOrder(OrderRecord order) {
+		logger.debug("订单创建入口");
+		
+		//TODO: 参数合法性校验
+		order.setOrderId(null);
+		orderService.newOrder(order);
+		
+		order = new OrderRecord();
+		Page page = new Page();
+		List<OrderVO> list = orderService.findOrder(order, page);
+		ModelAndView mav = new ModelAndView("orders");
+		mav.getModel().put("orders", list);
+		mav.getModel().put("page", page);
+		mav.getModel().put("params", order);
+		return mav;
+	}
+	
+	//AJAX请求处理示例
+	@RequestMapping("/showOrdersAjax") //匹配url：/order/showOrderAjax
+	public void showOrders(OrderRecord order, Page page, HttpServletResponse response) {
+		response.setContentType("text/json;charset=UTF-8");
+		PrintWriter out = null;
+		try {
+			out = response.getWriter();
+		} catch(IOException e) {
+			logger.error("error on getWriter()", e);
+		}
+		
+		JSONObject ret = new JSONObject();
+		if(page.getRows() > 20 || page.getPage() < 1) {
+			logger.error("非法的分页参数，pageSize: {}, pageNo: {}", page.getRows(), page.getPage());
+			ret.put("code", "-9");
+			ret.put("msg", "非法请求");
+			out.write(ret.toJSONString());
+			return;
+		}
+		
+		List<OrderVO> list = orderService.findOrder(order, page);
+		ret.put("code", "1");
+		ret.put("msg", "ok");
+		ret.put("orders", list);
+		out.write(ret.toJSONString());
+	}
+}

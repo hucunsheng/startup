@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+     xsi:schemaLocation="
+     http://www.springframework.org/schema/beans
+     http://www.springframework.org/schema/beans/spring-beans.xsd">
+  
+  <!-- 向HostUtils的map中注入属性 -->
+  <bean id="hostUtils" class="com.asiainfo.webapp.startup.util.HostUtils">
+    <property name="hostInfo">
+      <map>
+        <entry key="host" value="http://101.200.50.194:8080/startup-web/"/>
+      </map>
+    </property>
+  </bean>
+  <!-- 如需要配置其他的常量属性，均在此文件中进行配置 -->
+</beans>

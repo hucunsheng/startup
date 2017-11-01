@@ -1,0 +1,56 @@
+package com.asiainfo.webapp.startup.service.bjrbj.impl;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.ibatis.session.RowBounds;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import com.asiainfo.webapp.startup.dao.bjrbj.BjrbjRecordMapper;
+import com.asiainfo.webapp.startup.dao.bjrbj.model.BjrbjRecord;
+import com.asiainfo.webapp.startup.paging.Page;
+import com.asiainfo.webapp.startup.service.bjrbj.BjrbjService;
+import com.asiainfo.webapp.startup.vo.bjrbj.BjrbjVO;
+
+
+
+public class BjrbjServiceImpl implements BjrbjService {
+	//自动装配mapper bean
+	@Autowired
+	private BjrbjRecordMapper bjrbjRecordMapper;
+	
+	public BjrbjVO findOrder(int orderId) {
+		BjrbjRecord br = bjrbjRecordMapper.selectByPrimaryKey(orderId);
+		return model2VO(br);
+	}
+
+	public List<BjrbjVO> findOrder(BjrbjRecord order, Page page) {
+		List<BjrbjRecord> list = bjrbjRecordMapper.selectByModel(order,
+				new RowBounds(page.getSkip(), page.getMax()));
+		List<BjrbjVO> ret = new  ArrayList<BjrbjVO>(5);
+		for(BjrbjRecord or : list) {
+			ret.add(model2VO(or));
+		}
+		return ret;
+	}
+	public int selectByModelCount(BjrbjRecord record){
+		int a = bjrbjRecordMapper.selectByModelCount(record);
+		return a;
+	}
+	public int newOrder(BjrbjRecord order) {
+		return bjrbjRecordMapper.insert(order);
+	}
+	
+	private BjrbjVO model2VO(BjrbjRecord model) {
+		BjrbjVO vo = new BjrbjVO();
+		vo.setId(model.getId());
+		vo.setUserName(model.getUserName());
+		vo.setCertificateAddress(model.getCertificateAddress());
+		vo.setCurrentAddress(model.getCurrentAddress());
+		vo.setIdcardNo(model.getIdcardNo());
+		vo.setZipCode(model.getZipCode());
+		vo.setCreateTime(model.getCreateTime());
+		vo.setUpdateTime(model.getUpdateTime());
+		return vo;
+	}
+}

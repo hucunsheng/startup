@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+     xsi:schemaLocation="
+     http://www.springframework.org/schema/beans
+     http://www.springframework.org/schema/beans/spring-beans.xsd">
+  
+  <!-- 此文件为spring配置的根入口 -->
+  <!-- 此文件应只引入其他spring配置文件，本身不应存在任何spring配置 -->
+  
+  <!-- 引入dao层相关配置，数据源/事务管理/Mapper等 -->
+  <import resource="mybatis.xml"/>
+  <!-- 引入service层service bean -->
+  <import resource="classpath:service-beans.xml"/>
+  <!-- 引入会话共享和Redis相关配置 -->
+  <import resource="session.xml"/>
+  <!-- 引入常量配置 -->
+  <import resource="props.xml"/>
+</beans>

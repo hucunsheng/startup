@@ -1,0 +1,27 @@
+package com.asiainfo.webapp.startup.util;
+
+import java.util.Map;
+
+/**
+ * 维护web工程的根域名<br>
+ * 根域名通过WEB-INF/spring/props.xml注入
+ * 
+ * @author wukg
+ *
+ */
+public class HostUtils {
+	private static Map<String, String> hostInfo;
+	
+	public static String getHost() {
+		return hostInfo.get("host");
+	}
+	
+	public static String getHost(String type) {
+		return hostInfo.get(type);
+	}
+
+	public static void setHostInfo(Map<String, String> hostInfo) {
+		HostUtils.hostInfo = hostInfo;
+	}
+	
+}

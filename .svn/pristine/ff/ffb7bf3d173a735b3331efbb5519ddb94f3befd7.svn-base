@@ -1,0 +1,193 @@
+package com.asiainfo.webapp.startup.controller.bjrbj;
+
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.servlet.ModelAndView;
+
+import com.alibaba.fastjson.JSONObject;
+import com.asiainfo.webapp.startup.dao.bjrbj.model.BjrbjRecord;
+import com.asiainfo.webapp.startup.paging.Page;
+import com.asiainfo.webapp.startup.service.bjrbj.BjrbjService;
+import com.asiainfo.webapp.startup.token.Token;
+import com.asiainfo.webapp.startup.vo.bjrbj.BjrbjEasyUIVO;
+import com.asiainfo.webapp.startup.vo.bjrbj.BjrbjVO;
+
+@Controller //标注@Controller注解，以实现自动扫描和注册
+@RequestMapping("/bjrbj") //所有/bjrbj开头的url匹配至此controller
+public class BjrbjController {
+	private static final Logger logger = LoggerFactory.getLogger(BjrbjController.class);
+	
+	//注入名为bjrbjService的bean
+	@Resource(name="bjrbjService") 
+	private BjrbjService bjrbjService;
+	
+	@RequestMapping("/index") //匹配url：/bjrbj/showBjrbjs
+	public ModelAndView index() {
+		logger.debug("订单检索入口");
+		
+		ModelAndView mav = new ModelAndView("bjrbj/bjrbjInfo_index");
+		return mav;
+	}
+	
+	@RequestMapping("/showBjrbjs") //匹配url：/bjrbj/showBjrbjs
+	public ModelAndView showBjrbjs(BjrbjRecord order, Page page) {
+		logger.debug("订单检索入口");
+		
+		if(page.getRows() > 20 || page.getPage() < 1) {
+			logger.error("非法的分页参数，pageSize: {}, pageNo: {}", page.getRows(), page.getPage());
+			ModelAndView mav = new ModelAndView("error");
+			mav.getModel().put("errorMsg", "非法请求");
+			return mav;
+		}
+		
+		List<BjrbjVO> list = bjrbjService.findOrder(order, page);
+		ModelAndView mav = new ModelAndView("bjrbj/bjrbjInfo_list");
+		mav.getModel().put("orders", list);
+		mav.getModel().put("page", page);
+		mav.getModel().put("params", order);
+		return mav;
+	}
+	
+	@RequestMapping("/showBjrbjsJsonPage") //匹配url：/bjrbj/showBjrbjs
+	public ModelAndView showBjrbjsJsonPage() {
+		ModelAndView mav = new ModelAndView("bjrbj/bjrbjInfo_list");
+		return mav;
+	}
+	
+	@RequestMapping("/showBjrbjsJson") //匹配url：/bjrbj/showBjrbjs
+	public void showBjrbjsJson(BjrbjRecord order, Page page, HttpServletResponse response) {
+		logger.debug("订单检索入口");
+		response.setContentType("text/json;charset=UTF-8");
+		PrintWriter out = null;
+		try {
+			out = response.getWriter();
+		} catch(IOException e) {
+			logger.error("error on getWriter()", e);
+		}
+		JSONObject ret = new JSONObject();
+		if(page.getRows() > 20 || page.getPage() < 1) {
+			logger.error("非法的分页参数，pageSize: {}, pageNo: {}", page.getRows(), page.getPage());
+			ret.put("code", "-9");
+			ret.put("msg", "非法请求");
+			out.write(ret.toJSONString());
+			return;
+		}
+		int max = bjrbjService.selectByModelCount(order);
+		List<BjrbjVO> list = bjrbjService.findOrder(order, page);
+		ret.put("total", max);
+		ret.put("rows", list);
+		out.write(ret.toJSONString());
+	}
+	
+	//匹配url：/bjrbj/newBjrbj
+		@RequestMapping(path = "/newBjrbjPage")
+		@Token(generate = true) //此请求对应的响应中需要生成token
+		public ModelAndView newBjrbjPage(BjrbjRecord order) {
+			logger.debug("信息手机页面入口");
+			
+			ModelAndView mav = new ModelAndView("bjrbj/bjrbjInfo_form");
+			return mav;
+		}
+	
+	//匹配url：/bjrbj/newBjrbj，且仅支持POST方法
+	@RequestMapping(path = "/newBjrbj", method = RequestMethod.POST)
+	public ModelAndView newBjrbj(BjrbjRecord order) {
+		logger.debug("订单创建入口");
+		
+		//TODO: 参数合法性校验
+		order.setId(null);
+		bjrbjService.newOrder(order);
+		ModelAndView mav = new ModelAndView("bjrbj/bjrbjInfo_success");
+		return mav;
+	}
+	
+	@RequestMapping(path = "/showBjrbjDetail")
+	public ModelAndView showBjrbjDetail(BjrbjRecord order) {
+		logger.debug("订单创建入口");
+		ModelAndView mav = new ModelAndView("bjrbj/bjrbjInfo_detail");
+		mav.getModel().put("params", order);
+		return mav;
+	}
+	
+	//AJAX请求处理示例
+	@RequestMapping("/showBjrbjAjax") //匹配url：/bjrbj/showBjrbjAjax
+	public void showBjrbjAjax(BjrbjRecord order, Page page, HttpServletResponse response) {
+		response.setContentType("text/json;charset=UTF-8");
+		PrintWriter out = null;
+		try {
+			out = response.getWriter();
+		} catch(IOException e) {
+			logger.error("error on getWriter()", e);
+		}
+		
+		JSONObject ret = new JSONObject();
+		if(page.getRows() > 20 || page.getPage() < 1) {
+			logger.error("非法的分页参数，pageSize: {}, pageNo: {}", page.getRows(), page.getPage());
+			ret.put("code", "-9");
+			ret.put("msg", "非法请求");
+			out.write(ret.toJSONString());
+			return;
+		}
+		List<BjrbjEasyUIVO> jsonList = new ArrayList<BjrbjEasyUIVO>();
+		Map<String,Object> map = new HashMap<String,Object>(); 
+		BjrbjVO vo = bjrbjService.findOrder(order.getId());
+
+			if(StringUtils.isNotEmpty(vo.getUserName())){
+				BjrbjEasyUIVO easyVo = new BjrbjEasyUIVO();
+				easyVo.setName("姓名");
+				easyVo.setValue(vo.getUserName());
+				easyVo.setGroup("ID Settings");
+				easyVo.setEditor("text");
+				jsonList.add(easyVo);
+			}
+			if(StringUtils.isNotEmpty(vo.getIdcardNo())){
+				BjrbjEasyUIVO easyVo = new BjrbjEasyUIVO();
+				easyVo.setName("证件号码");
+				easyVo.setValue(vo.getIdcardNo());
+				easyVo.setGroup("ID Settings");
+				easyVo.setEditor("text");
+				jsonList.add(easyVo);
+			}
+			if(StringUtils.isNotEmpty(vo.getCertificateAddress())){
+				BjrbjEasyUIVO easyVo = new BjrbjEasyUIVO();
+				easyVo.setName("证件地址");
+				easyVo.setValue(vo.getCertificateAddress());
+				easyVo.setGroup("ID Settings");
+				easyVo.setEditor("text");
+				jsonList.add(easyVo);
+			}
+			if(StringUtils.isNotEmpty(vo.getCurrentAddress())){
+				BjrbjEasyUIVO easyVo = new BjrbjEasyUIVO();
+				easyVo.setName("居住地址");
+				easyVo.setValue(vo.getCurrentAddress());
+				easyVo.setGroup("ID Settings");
+				easyVo.setEditor("text");
+				jsonList.add(easyVo);
+			}
+			if(StringUtils.isNotEmpty(vo.getZipCode())){
+				BjrbjEasyUIVO easyVo = new BjrbjEasyUIVO();
+				easyVo.setName("邮政编码");
+				easyVo.setValue(vo.getZipCode());
+				easyVo.setGroup("ID Settings");
+				easyVo.setEditor("text");
+				jsonList.add(easyVo);
+			}
+		ret.put("total", jsonList.size());
+		ret.put("rows", jsonList);
+		out.write(ret.toJSONString());
+	}
+}

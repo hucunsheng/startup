@@ -1,0 +1,42 @@
+package com.asiainfo.webapp.startup.listener;
+
+import javax.servlet.ServletContextEvent;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.web.context.ContextLoaderListener;
+
+import com.asiainfo.webapp.startup.util.ContextHolder;
+import com.asiainfo.webapp.startup.util.RedisClient;
+
+/**
+ * 系统初始化监听器，系统启动时需要完成的动作均在此进行
+ * 
+ * @author wukg
+ *
+ */
+public class SystemInitializeListener extends ContextLoaderListener {
+	private static final Logger logger = LoggerFactory.getLogger(SystemInitializeListener.class);
+	
+	@Override
+	public void contextInitialized(ServletContextEvent event) {
+		//调用父类ContextLoaderListener，完成Spring ApplicationContext的初始化
+		super.contextInitialized(event);
+		//ApplicationContext初始化完成后，执行其他需要的初始化动作
+		afterSpringContextInitialized();
+	}
+	
+	private void afterSpringContextInitialized() {
+		logger.info("Spring Context初始化完成，执行后续初始化动作...");
+		
+		//将ApplicationContext注入到ContextHolder中
+		ContextHolder.setCtx(getCurrentWebApplicationContext());
+		//将stringRedisTemplate注入到RedisClient工具类中
+		RedisClient.setTemplate(ContextHolder.getCtx().getBean("stringRedisTemplate", StringRedisTemplate.class));
+		
+		//TODO: 其他初始化动作
+		
+		logger.info("系统初始化完成");
+	}
+}

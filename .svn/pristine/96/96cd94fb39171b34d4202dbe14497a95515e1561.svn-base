@@ -1,0 +1,21 @@
+package com.asiainfo.webapp.startup.token;
+
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
+/**
+ * Token注解，用于标注需要防重复提交或防CSRF攻击的相关Controller方法<br>
+ * required = true，代表该方法执行前会校验提交的token是否合法
+ * generate = true，代表该方法执行后会生成随机token，同时写入session和响应
+ * 
+ * @author wukg
+ *
+ */
+@Target(ElementType.METHOD)
+@Retention(RetentionPolicy.RUNTIME)
+public @interface Token {
+	boolean required() default false;
+	boolean generate() default false;
+}

@@ -1,0 +1,52 @@
+var pageNo = $("input[name='pageNo']");
+
+$("#showBtn").click(function() {
+	pageNo.val(1);
+	$("#demoForm").submit();
+});
+
+$("#createBtn").click(function() {
+	$("#demoForm").attr("action", "order/newOrder");
+	$("#demoForm").submit();
+});
+
+var curPage = Number(pageNo.val());
+
+$("#prev").click(function() {
+	pageNo.val(curPage-1);
+	$("#demoForm").submit();
+});
+
+$("#next").click(function() {
+	pageNo.val(curPage+1);
+	$("#demoForm").submit();
+});
+
+$("#ajaxBtn").click(function() {
+	var orderId = $("input[name='orderId']").val();
+	var userId = $("input[name='userId']").val();
+	var wareId = $("input[name='wareId']").val();
+	var orderDesc = $("input[name='orderDesc']").val();
+	$.ajax({
+		url: "order/showOrdersAjax",
+		method: "get",
+		data: "orderId="+orderId+"&userId="+userId+"&wareId="+wareId+"&orderDesc="+orderDesc,
+		cache: false, 
+		dataType: "json",
+		contentType: "application/x-www-form-urlencoded; charset=utf-8",
+		success: function(data) {
+			if(data.code == "1") {
+				var ul = $("#orderList");
+				ul.empty();
+				for(var i = 0; i < data.orders.length; i++) {
+					var li = $("<li>订单编号：" + data.orders[i].orderId + "，用户ID：" + data.orders[i].userId
+							+ "，商品编号：" + data.orders[i].wareId + "，订单描述：" + data.orders[i].orderDesc
+							+ "</li>");
+					ul.append(li);
+				}
+			} else {
+				alert(data.msg);
+			}
+		}
+	});
+});

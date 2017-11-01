@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<!-- 引入JSTL标签库 -->
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt"  prefix="fmt"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions"  prefix="fn"%>
+<html>
+<head>
+<!-- base为HostUtils管理的根域名，页面中所有其他url均默认为相对于此路径 -->
+  <base href="<%=com.asiainfo.webapp.startup.util.HostUtils.getHost()%>"/>
+  <script type="text/javascript" src="static/js/jquery-1.12.4.min.js" charset="utf-8"></script>  
+</head>
+<body>
+  <form id="demoForm" action="order/showOrders" method="post">
+    订单编号：<input type="text" name="orderId" value="${params.orderId}"/>
+    用户ID：<input type="text" name="userId" value="${params.userId}"/>
+    商品编号：<input type="text" name="wareId" value="${params.wareId}"/>
+    订单描述：<input type="text" name="orderDesc" value="${params.orderDesc}"/>
+    <input type="hidden" name="pageNo" value="${page.pageNo}"/>
+    <!-- 请求参数_gpost_token，在需要防重复提交/防CSRF的请求必须携带 -->
+    <input type="hidden" name="_gpost_token" value="${_gpost_token}"/>
+    <input type="button" id="showBtn" value="查询"/>
+    <input type="button" id="createBtn" value="创建"/>
+    <input type="button" id="ajaxBtn" value="查询(AJAX)"/>
+  </form>
+  
+  <ul id="orderList">
+    <c:forEach var="item" items="${orders}" varStatus="idx">
+  		<li>订单编号：${item.orderId}，用户ID：${item.userId}，商品编号：${item.wareId}，订单描述：${item.orderDesc}
+    </c:forEach>
+  </ul>
+  <c:if test="${page.pageNo > 1}">
+  	<a href="javascript:;" id="prev">上一页</a>
+  </c:if>
+  <c:if test="${fn:length(orders) == page.pageSize}">
+  	<a href="javascript:;" id="next">下一页</a>
+  </c:if>
+  
+  <script type="text/javascript" src="static/js/demo.js" charset="utf-8"></script>  
+</body>
+</html>

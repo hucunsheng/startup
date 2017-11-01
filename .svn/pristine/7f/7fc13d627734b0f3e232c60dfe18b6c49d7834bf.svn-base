@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+     xmlns:context="http://www.springframework.org/schema/context"
+     xmlns:mvc="http://www.springframework.org/schema/mvc"
+     xsi:schemaLocation="
+     http://www.springframework.org/schema/beans
+     http://www.springframework.org/schema/beans/spring-beans.xsd
+     http://www.springframework.org/schema/context
+     http://www.springframework.org/schema/context/spring-context.xsd
+     http://www.springframework.org/schema/mvc
+     http://www.springframework.org/schema/mvc/spring-mvc.xsd">
+    
+    <!-- 扫描controller包下的@Controller注解类，将其注册为Controller -->
+    <context:component-scan base-package="com.asiainfo.webapp.startup.controller" />
+    
+    <!-- JSP视图适配配置，适配规则：/WEB-INF/jsp/{controller返回的view名称}.jsp -->
+    <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+        <property name="viewClass" value="org.springframework.web.servlet.view.JstlView"/>
+        <property name="prefix" value="/WEB-INF/jsp/" />
+        <property name="suffix" value=".jsp" />
+    </bean>
+    
+    <!-- 静态资源处理，所有/static/开头的请求作为静态资源处理 -->
+    <mvc:annotation-driven/>
+    <mvc:resources location="/static/" mapping="/static/**"/>
+    
+    <!-- 全局异常处理器，处理从Controller层抛出的异常 -->
+    <bean id="exceptionHandler" class="com.asiainfo.webapp.startup.controller.exception.ExceptionHandler"/>
+    
+    <!-- 拦截器配置 -->
+    <mvc:interceptors>
+        <!-- Token拦截器，用于防重复提交/防CSRF -->
+        <mvc:interceptor>
+            <mvc:mapping path="/**"/>
+            <bean class="com.asiainfo.webapp.startup.token.TokenInterceptor"/>
+        </mvc:interceptor>
+    </mvc:interceptors>
+</beans>
