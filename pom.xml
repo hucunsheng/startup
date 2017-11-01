@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>com.asiainfo.webapp</groupId>
+  <artifactId>startup</artifactId>
+  <version>0.0.1-SNAPSHOT</version>
+  <packaging>pom</packaging>
+
+  <name>startup</name>
+
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <boot.version>1.5.8.RELEASE</boot.version>
+    <c3p0.version>0.9.1.1</c3p0.version>
+    <jdbc.version>10.2.0.2</jdbc.version>
+  </properties>
+
+
+  <modules>
+      <module>startup-base</module>
+      <module>startup-dao</module>
+      <module>startup-standalone</module>
+      <module>startup-service</module>
+      <module>startup-web</module>
+      <module>startup-router</module>
+  </modules>
+
+  
+  <!-- maven依赖库版本管理 -->
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>com.asiainfo.webapp</groupId>
+        <artifactId>startup-base</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.asiainfo.webapp</groupId>
+        <artifactId>startup-dao</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.asiainfo.webapp</groupId>
+        <artifactId>startup-service</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.asiainfo.webapp</groupId>
+        <artifactId>startup-router</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+
+    </dependencies>
+  </dependencyManagement>
+</project>

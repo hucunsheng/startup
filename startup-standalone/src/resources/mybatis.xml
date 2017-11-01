@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+     xmlns:aop="http://www.springframework.org/schema/aop"
+     xmlns:tx="http://www.springframework.org/schema/tx"
+     xsi:schemaLocation="
+     http://www.springframework.org/schema/beans
+     http://www.springframework.org/schema/beans/spring-beans.xsd
+     http://www.springframework.org/schema/tx
+     http://www.springframework.org/schema/tx/spring-tx.xsd
+     http://www.springframework.org/schema/aop
+     http://www.springframework.org/schema/aop/spring-aop.xsd">
+
+    <!-- 数据源配置 -->
+    <bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource" destroy-method="close">
+        <property name="driverClass" value="com.mysql.jdbc.Driver" />
+        <property name="jdbcUrl" value="jdbc:mysql://101.200.50.194:3306/mysql" />
+        <property name="user" value="hucs" />
+        <property name="password" value="eBizEc,321!"/>
+        <property name="acquireIncrement" value="5"/>
+        <property name="idleConnectionTestPeriod" value="60"/>
+        <property name="initialPoolSize" value="5"/>
+        <property name="maxPoolSize" value="15"/>
+        <property name="minPoolSize" value="5"/>
+        <property name="maxIdleTime" value="600"/>
+        <property name="checkoutTimeout" value="10000"/>
+    </bean>
+
+    <!-- sqlSessionFactory配置 -->
+    <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+        <property name="dataSource" ref="dataSource" />
+        <property name="mapperLocations" value="classpath:com/asiainfo/webapp/startup/dao/*/mapper/*.xml" />
+        <property name="typeAliasesPackage" value="com.asiainfo.webapp.startup.dao"/>
+        <property name="plugins">
+            <array>
+                <bean class="com.github.pagehelper.PageInterceptor">
+                    <property name="properties">
+                        <value>
+                            helperDialect=mysql
+                        </value>
+                    </property>
+                </bean>
+            </array>
+        </property>
+    </bean>
+    
+    <!-- 自动扫描指定包下所有Mapper -->
+    <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+        <property name="basePackage" value="com.asiainfo.webapp.startup.dao" />
+        <property name="sqlSessionFactoryBeanName" value="sqlSessionFactory" />
+    </bean>
+    
+    <!-- 事务管理 -->
+     <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <property name="dataSource" ref="dataSource" />
+    </bean>
+    
+    <aop:config>
+        <aop:pointcut id="txPointCut" expression="execution(* com.asiainfo.webapp.startup.service..*Service.*(..))"/>
+        <aop:advisor advice-ref="txAdvice" pointcut-ref="txPointCut"/>
+    </aop:config>
+    
+    <tx:advice id="txAdvice" transaction-manager="transactionManager">
+        <tx:attributes>
+            <!-- 仅查询的方法，应指定read-only="true"，以触发DB的优化策略 -->
+            <tx:method name="get*" read-only="true"/>
+            <tx:method name="show*" read-only="true"/>
+            <tx:method name="find*" read-only="true"/>
+            <!-- 所有其他方法，均默认采用REQUIRED传播，非只读，在抛出RuntimeException时回滚 -->
+            <tx:method name="*"/>
+        </tx:attributes>
+    </tx:advice>
+
+</beans>

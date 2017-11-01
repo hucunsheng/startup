@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+     xsi:schemaLocation="
+     http://www.springframework.org/schema/beans
+     http://www.springframework.org/schema/beans/spring-beans.xsd">
+  
+  <!-- order模块中所有service bean配置在此 -->
+  <!-- service对dao的依赖自动装配，无需在此处配置 -->
+  <!-- service之间的依赖需要在此处配置 -->
+  <bean id="bjrbjService"  class="com.asiainfo.webapp.startup.service.bjrbj.impl.BjrbjServiceImpl"/>
+  
+</beans>

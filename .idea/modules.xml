@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/startup.iml" filepath="$PROJECT_DIR$/startup.iml" />
+      <module fileurl="file://$PROJECT_DIR$/startup-base/startup-base.iml" filepath="$PROJECT_DIR$/startup-base/startup-base.iml" />
+      <module fileurl="file://$PROJECT_DIR$/startup-dao/startup-dao.iml" filepath="$PROJECT_DIR$/startup-dao/startup-dao.iml" />
+      <module fileurl="file://$PROJECT_DIR$/startup-router/startup-router.iml" filepath="$PROJECT_DIR$/startup-router/startup-router.iml" />
+      <module fileurl="file://$PROJECT_DIR$/startup-service/startup-service.iml" filepath="$PROJECT_DIR$/startup-service/startup-service.iml" />
+      <module fileurl="file://$PROJECT_DIR$/startup-standalone/startup-standalone.iml" filepath="$PROJECT_DIR$/startup-standalone/startup-standalone.iml" />
+      <module fileurl="file://$PROJECT_DIR$/startup-web/startup-web.iml" filepath="$PROJECT_DIR$/startup-web/startup-web.iml" />
+    </modules>
+  </component>
+</project>

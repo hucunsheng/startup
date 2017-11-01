@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <annotationProcessing>
+      <profile name="Maven default annotation processors profile" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <module name="startup-base" />
+        <module name="startup-dao" />
+        <module name="startup-router" />
+        <module name="startup-service" />
+        <module name="startup-standalone" />
+        <module name="startup-web" />
+      </profile>
+    </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="startup" target="1.5" />
+      <module name="startup-base" target="1.5" />
+      <module name="startup-dao" target="1.5" />
+      <module name="startup-router" target="1.5" />
+      <module name="startup-service" target="1.5" />
+      <module name="startup-standalone" target="1.5" />
+      <module name="startup-web" target="1.5" />
+    </bytecodeTargetLevel>
+  </component>
+</project>
